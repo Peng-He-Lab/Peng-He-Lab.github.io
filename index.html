@@ -445,8 +445,8 @@
         .arrow.active {
             transform: rotate(90deg);
         }
-    </style>
-    <style>
+
+    /* Part 4 Poster Styles */
     .lab-fun-container {
         padding: 15px;
         text-align: center;
@@ -988,11 +988,13 @@
         </div>
     </section>
     <script>
-    document.querySelector('.collapsible-header').addEventListener('click', function() {
-        const content = this.nextElementSibling;
-        const arrow = this.querySelector('.arrow');
-        content.classList.toggle('active');
-        arrow.classList.toggle('active');
+    document.querySelectorAll('.collapsible-header').forEach(function(header) {
+        header.addEventListener('click', function() {
+          const content = this.nextElementSibling;
+          const arrow = this.querySelector('.arrow');
+          content.classList.toggle('active');
+          arrow.classList.toggle('active');
+      });
     });
   </script>
 </body>

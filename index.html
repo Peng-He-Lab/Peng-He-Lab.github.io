@@ -236,6 +236,12 @@
             height: 250px;
             object-fit: cover;
             border-bottom: 2px solid #3498db;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .highlight-image:hover {
+            opacity: 0.9;
         }
 
         .highlight-content {
@@ -499,7 +505,9 @@
         <h2 class="section-title">Research Highlights</h2>
         <div class="highlights-grid">
             <div class="highlight-card">
-                <img class="highlight-image" src="materials/ENCODERNA.jpg" alt="Mouse embryo transcriptome">
+                <a href="https://www.nature.com/articles/s41586-020-2536-x" target="_blank">
+                    <img class="highlight-image" src="materials/ENCODERNA.jpg" alt="Mouse embryo transcriptome">
+                </a>
                 <div class="highlight-content">
                     <h3>The changing mouse embryo transcriptome at whole tissue and single-cell resolution</h3>
                     <div class="journal">Nature (2020)</div>
@@ -509,7 +517,9 @@
             </div>
 
             <div class="highlight-card">
-                <img class="highlight-image" src="materials/lung.jpg" alt="Human fetal lung cell atlas">
+                <a href="https://www.cell.com/cell/fulltext/S0092-8674(22)01415-5" target="_blank">
+                    <img class="highlight-image" src="materials/lung.jpg" alt="Human fetal lung cell atlas">
+                </a>
                 <div class="highlight-content">
                     <h3>A human fetal lung cell atlas uncovers proximal-distal gradients of differentiation and key regulators of epithelial fates</h3>
                     <div class="journal">Cell (2022)</div>
@@ -519,7 +529,9 @@
             </div>
 
             <div class="highlight-card">
-                <img class="highlight-image" src="materials/Limb.jpg" alt="Human embryonic limb atlas">
+                <a href="https://www.nature.com/articles/s41586-023-06806-x" target="_blank">
+                    <img class="highlight-image" src="materials/Limb.jpg" alt="Human embryonic limb atlas">
+                </a>
                 <div class="highlight-content">
                     <h3>A human embryonic limb cell atlas resolved in space and time</h3>
                     <div class="journal">Nature (2023)</div>
@@ -529,7 +541,9 @@
             </div>
 
             <div class="highlight-card">
-                <img class="highlight-image" src="materials/lungimmune.jpg" alt="Lung immune cell development">
+                <a href="https://www.science.org/doi/10.1126/sciimmunol.adf9988" target="_blank">
+                    <img class="highlight-image" src="materials/lungimmune.jpg" alt="Lung immune cell development">
+                </a>
                 <div class="highlight-content">
                     <h3>Early human lung immune cell development and its role in epithelial cell fate</h3>
                     <div class="journal">Science Immunology (2023)</div>

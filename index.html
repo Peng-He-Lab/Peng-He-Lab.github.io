@@ -1129,11 +1129,8 @@ Long-term vision: progressive conversion of Class II uncertainty into Class I de
         </div>
       </div>
 <div class="collapsible-section">
-    <div class="collapsible-header">
-        <span class="arrow">▶</span>
-        <h3 class="section-subtitle">Research Lineage & Mentors</h3>
-    </div>
-    <div class="collapsible-content" style="text-align: center; background: white; padding: 20px; border-radius: 8px;">
+    <h3 style="display: inline-block; margin: 2rem auto 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #3498db; color: #2c3e50;">Research Lineage & Mentors</h3>
+    <div style="text-align: center; background: white; padding: 20px; border-radius: 8px;">
         <div class="mermaid">
 graph TD
     %% 1. Style Definitions
@@ -1207,6 +1204,7 @@ graph TD
         </div>
     </div>
 </div>
+
 
 <!-- Lab Fun Section -->
 <div class="collapsible-section">
@@ -1474,47 +1472,19 @@ graph TD
         </div>  
         </div>
     </section>
-    <script>
-    document.querySelectorAll('.collapsible-header').forEach(function(header) {
-        header.addEventListener('click', function() {
-          const content = this.nextElementSibling;
-          const arrow = this.querySelector('.arrow');
-          const wasHidden = !content.classList.contains('active');
-          content.classList.toggle('active');
-          arrow.classList.toggle('active');
-
-          // Re-run Mermaid if this section contains a diagram and is now visible
-          if (wasHidden && content.querySelector('.mermaid')) {
-            const mermaidDiv = content.querySelector('.mermaid');
-            // Clear any previously rendered SVG so Mermaid re-processes it
-            if (mermaidDiv.getAttribute('data-processed')) {
-              mermaidDiv.removeAttribute('data-processed');
-              const svg = mermaidDiv.querySelector('svg');
-              if (svg) svg.remove();
-            }
-            if (window.mermaid) {
-              window.mermaid.run({ nodes: [mermaidDiv] });
-            }
-          }
-      });
+<script>
+  document.querySelectorAll('.collapsible-header').forEach(function(header) {
+    header.addEventListener('click', function() {
+      const content = this.nextElementSibling;
+      const arrow = this.querySelector('.arrow');
+      content.classList.toggle('active');
+      arrow.classList.toggle('active');
     });
-  </script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.js';
-  mermaid.initialize({ 
-    startOnLoad: false,
-    securityLevel: 'loose',
-    theme: 'default'
   });
-  // Expose mermaid globally so the collapsible handler can call it
-  window.mermaid = mermaid;
-  // Only render mermaid diagrams that are currently visible
-  document.querySelectorAll('.mermaid').forEach(function(el) {
-    if (el.closest('.collapsible-content') && !el.closest('.collapsible-content').classList.contains('active')) {
-      return; // skip hidden ones
-    }
-    mermaid.run({ nodes: [el] });
-  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, securityLevel: 'loose', theme: 'default' });
 </script>
 </body>
 </html>

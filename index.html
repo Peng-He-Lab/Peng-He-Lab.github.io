@@ -1127,6 +1127,85 @@ Long-term vision: progressive conversion of Class II uncertainty into Class I de
             </table>
           </div>
       </div>
+<div class="collapsible-section">
+    <div class="collapsible-header">
+        <span class="arrow">▶</span>
+        <h3 class="section-subtitle">Research Lineage & Mentors</h3>
+    </div>
+    <div class="collapsible-content" style="text-align: center; background: white; padding: 20px; border-radius: 8px;">
+        <div class="mermaid">
+graph TD
+    %% 1. Style Definitions
+    classDef primary fill:#fff4e5,stroke:#d4af37,stroke-width:4px,color:#000,font-weight:bold;
+    classDef postdoc fill:#e8f5e9,stroke:#2e7d32,stroke-width:4px,color:#000,font-weight:bold;
+    classDef mentor fill:#fff,stroke:#bbb,stroke-dasharray: 5 5,font-size:12px;
+    classDef rotation fill:#f9f9f9,stroke:#ddd,color:#666;
+
+    %% 2. Advisor Nodes
+    BW[Dr. Barbara Wold - Graduate Advisor]
+    ST[Dr. Sarah Teichmann - Postdoc Advisor]
+    JM[Dr. John Marioni - Postdoc Advisor]
+
+    DC[Dr. Danny Chan - Undergrad]
+    ZJ[Dr. Zhongjun Zhou - Undergrad]
+    SJ[Dr. Steve Jacobsen - Undergrad]
+    
+    subgraph Rotations [PhD Rotations]
+    AA[Dr. Alexei Aravin]
+    LC[Dr. Long Cai]
+    MG[Dr. Mitch Guttman]
+    end
+
+    %% 3. Mentor Nodes
+    XW[Mentor: Dr. Xavier Wong]
+    HS[Mentor: Dr. Hume Stroud]
+    JE[Mentor: Dr. Jesse Engreitz]
+    DK[Mentor: Dr. Daniel Kim]
+
+    %% 4. Target Node
+    PH[Dr. Peng He]
+
+    %% 5. Connections
+    BW === DK
+    DK === PH
+    ST === PH
+    JM === PH
+
+    DC --> PH
+    ZJ --- XW
+    XW --> PH
+    SJ --- HS
+    HS --> PH
+    AA -.-> PH
+    LC -.-> PH
+    MG --- JE
+    JE --> PH
+
+    %% 6. Apply Styles
+    class BW primary;
+    class ST,JM postdoc;
+    class XW,HS,JE,DK mentor;
+    class AA,LC,MG rotation;
+    
+    style PH fill:#003262,color:#fff,stroke:#F2C832,stroke-width:4px
+
+    %% 7. Click Commands
+    click BW "https://merkin.caltech.edu/merkin-institute-people-listing/barbara-wold" _blank
+    click ST "https://www.cardiovascular.cam.ac.uk/directory/steichmann" _blank
+    click JM "https://www.idrm.ox.ac.uk/people/external-staff/john-marioni" _blank
+    click DC "https://www.sbms.hku.hk/staff/danny-chan" _blank
+    click ZJ "https://www.sbms.hku.hk/staff/zhongjun-zhou" _blank
+    click SJ "https://profiles.ucla.edu/steven.jacobsen" _blank
+    click AA "https://cals.cornell.edu/people/alexei-aravin" _blank
+    click LC "https://www.bbe.caltech.edu/people/long-cai" _blank
+    click MG "https://www.bbe.caltech.edu/people/mitchell-guttman" _blank
+    click XW "https://xavierwong.org/" _blank
+    click HS "https://profiles.utsouthwestern.edu/profile/195498/hume-akahori-stroud.html" _blank
+    click JE "https://profiles.stanford.edu/jesse-engreitz" _blank
+    click DK "https://dkim.sites.ucsc.edu/" _blank
+        </div>
+    </div>
+</div>
   </div>
 <!-- Lab Fun Section -->
 <div class="collapsible-section">
@@ -1403,5 +1482,13 @@ Long-term vision: progressive conversion of Class II uncertainty into Class I de
       });
     });
   </script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.js';
+  mermaid.initialize({ 
+    startOnLoad: true,
+    securityLevel: 'loose',
+    theme: 'default'
+  });
+</script>
 </body>
 </html>

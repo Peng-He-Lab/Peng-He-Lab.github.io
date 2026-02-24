@@ -1479,17 +1479,41 @@ graph TD
         header.addEventListener('click', function() {
           const content = this.nextElementSibling;
           const arrow = this.querySelector('.arrow');
+          const wasHidden = !content.classList.contains('active');
           content.classList.toggle('active');
           arrow.classList.toggle('active');
+
+          // Re-run Mermaid if this section contains a diagram and is now visible
+          if (wasHidden && content.querySelector('.mermaid')) {
+            const mermaidDiv = content.querySelector('.mermaid');
+            // Clear any previously rendered SVG so Mermaid re-processes it
+            if (mermaidDiv.getAttribute('data-processed')) {
+              mermaidDiv.removeAttribute('data-processed');
+              const svg = mermaidDiv.querySelector('svg');
+              if (svg) svg.remove();
+            }
+            if (window.mermaid) {
+              window.mermaid.run({ nodes: [mermaidDiv] });
+            }
+          }
       });
     });
   </script>
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.js';
   mermaid.initialize({ 
-    startOnLoad: true,
+    startOnLoad: false,
     securityLevel: 'loose',
     theme: 'default'
+  });
+  // Expose mermaid globally so the collapsible handler can call it
+  window.mermaid = mermaid;
+  // Only render mermaid diagrams that are currently visible
+  document.querySelectorAll('.mermaid').forEach(function(el) {
+    if (el.closest('.collapsible-content') && !el.closest('.collapsible-content').classList.contains('active')) {
+      return; // skip hidden ones
+    }
+    mermaid.run({ nodes: [el] });
   });
 </script>
 </body>

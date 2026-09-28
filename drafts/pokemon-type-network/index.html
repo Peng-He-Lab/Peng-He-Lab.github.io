@@ -1573,7 +1573,7 @@ html&gt;body{padding:0}&lt;/style&gt;
 #pokemon-type-network .form-label { min-width:210px; }
 #pokemon-type-network .card { margin-bottom:8px; }
 #type-network-svg { width:100%; height:620px; display:block; overflow:visible; }
-#pokemon-type-network .edge { stroke:var(--border); stroke-width:1.2; opacity:.52; }
+#pokemon-type-network .edge { fill:none; stroke:var(--border); stroke-width:1.2; opacity:.52; }
 #pokemon-type-network .edge.active-out { stroke:var(--viz-series-1); stroke-width:2.5; opacity:1; }
 #pokemon-type-network .edge.active-in { stroke:var(--viz-series-3); stroke-width:2.5; opacity:1; }
 #pokemon-type-network .edge.dim { opacity:.06; }
@@ -1619,7 +1619,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     defs.append(&#x27;marker&#x27;).attr(&#x27;id&#x27;,id).attr(&#x27;viewBox&#x27;,&#x27;0 -5 10 10&#x27;).attr(&#x27;refX&#x27;,34).attr(&#x27;refY&#x27;,0).attr(&#x27;markerWidth&#x27;,6).attr(&#x27;markerHeight&#x27;,6).attr(&#x27;orient&#x27;,&#x27;auto&#x27;).append(&#x27;path&#x27;).attr(&#x27;d&#x27;,&#x27;M0,-5L10,0L0,5&#x27;).attr(&#x27;fill&#x27;,c);
   });
   const g=svg.append(&#x27;g&#x27;);
-  const edge=g.append(&#x27;g&#x27;).selectAll(&#x27;line&#x27;).data(links).join(&#x27;line&#x27;).attr(&#x27;class&#x27;,&#x27;edge&#x27;).attr(&#x27;marker-end&#x27;,&#x27;url(#arrow)&#x27;);
+  const edge=g.append(&#x27;g&#x27;).selectAll(&#x27;path&#x27;).data(links).join(&#x27;path&#x27;).attr(&#x27;class&#x27;,&#x27;edge&#x27;).attr(&#x27;marker-end&#x27;,&#x27;url(#arrow)&#x27;);
   const node=g.append(&#x27;g&#x27;).selectAll(&#x27;g&#x27;).data(nodes).join(&#x27;g&#x27;).attr(&#x27;class&#x27;,&#x27;node cursor-interaction&#x27;).attr(&#x27;role&#x27;,&#x27;button&#x27;).attr(&#x27;aria-label&#x27;,d=&gt;`Focus on ${d.id}`).on(&#x27;click&#x27;,(e,d)=&gt;focus(d.id));
   node.append(&#x27;circle&#x27;).attr(&#x27;class&#x27;,&#x27;node-hit&#x27;).attr(&#x27;r&#x27;,32);
   node.append(&#x27;circle&#x27;).attr(&#x27;class&#x27;,&#x27;type-disc&#x27;).attr(&#x27;cy&#x27;,-8).attr(&#x27;r&#x27;,18).attr(&#x27;fill&#x27;,d=&gt;d.color);
@@ -1627,13 +1627,20 @@ html&gt;body{padding:0}&lt;/style&gt;
   node.append(&#x27;text&#x27;).attr(&#x27;class&#x27;,&#x27;type-label&#x27;).attr(&#x27;y&#x27;,19).text(d=&gt;d.id);
   node.append(&#x27;title&#x27;).text(d=&gt;d.id);
   let sim, width=700, height=620, selected=&#x27;all&#x27;;
+  function edgePath(d){
+    if(d.source.id===d.target.id){
+      const x=d.source.x, y=d.source.y;
+      return `M${x},${y} C${x-58},${y-82} ${x+58},${y-82} ${x},${y}`;
+    }
+    return `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`;
+  }
   function redraw(){
     width=root.querySelector(&#x27;#type-network-svg&#x27;).getBoundingClientRect().width || 700;
     height=width&lt;520?700:620; svg.attr(&#x27;viewBox&#x27;,`0 0 ${width} ${height}`);
     if(sim) sim.stop();
     sim=d3.forceSimulation(nodes).force(&#x27;link&#x27;,d3.forceLink(links).id(d=&gt;d.id).distance(width&lt;520?108:130).strength(.18)).force(&#x27;charge&#x27;,d3.forceManyBody().strength(width&lt;520?-390:-560)).force(&#x27;center&#x27;,d3.forceCenter(width/2,height/2)).force(&#x27;collision&#x27;,d3.forceCollide(43)).on(&#x27;tick&#x27;,()=&gt;{
       nodes.forEach(d=&gt;{d.x=Math.max(38,Math.min(width-38,d.x));d.y=Math.max(38,Math.min(height-38,d.y));});
-      edge.attr(&#x27;x1&#x27;,d=&gt;d.source.x).attr(&#x27;y1&#x27;,d=&gt;d.source.y).attr(&#x27;x2&#x27;,d=&gt;d.target.x).attr(&#x27;y2&#x27;,d=&gt;d.target.y);
+      edge.attr(&#x27;d&#x27;,edgePath);
       node.attr(&#x27;transform&#x27;,d=&gt;`translate(${d.x},${d.y})`);
     });
   }

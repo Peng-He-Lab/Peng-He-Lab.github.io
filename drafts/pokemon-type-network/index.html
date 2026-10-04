@@ -1571,6 +1571,10 @@ html&gt;body{padding:0}&lt;/style&gt;
     &lt;span class=&quot;legend-item&quot;&gt;&lt;i class=&quot;legend-line strong&quot;&gt;&lt;/i&gt;&lt;strong&gt;1.6×&lt;/strong&gt; super effective&lt;/span&gt;
     &lt;span class=&quot;legend-item&quot;&gt;&lt;i class=&quot;legend-line resisted&quot;&gt;&lt;/i&gt;&lt;strong&gt;0.625×&lt;/strong&gt; resisted&lt;/span&gt;
     &lt;span class=&quot;legend-item&quot;&gt;&lt;i class=&quot;legend-line immune&quot;&gt;&lt;/i&gt;&lt;strong&gt;0.391×&lt;/strong&gt; heavily resisted (main-series immunity)&lt;/span&gt;
+    &lt;span id=&quot;direction-legend&quot; class=&quot;direction-legend&quot; aria-live=&quot;polite&quot;&gt;
+      &lt;span class=&quot;legend-item&quot;&gt;&lt;i class=&quot;legend-line resisted-out&quot;&gt;&lt;/i&gt;Selected type’s attacks are resisted&lt;/span&gt;
+      &lt;span class=&quot;legend-item&quot;&gt;&lt;i class=&quot;legend-line resisted-in&quot;&gt;&lt;/i&gt;Selected type resists incoming attacks&lt;/span&gt;
+    &lt;/span&gt;
     &lt;span&gt;Choose or click a type to isolate its relationships&lt;/span&gt;
   &lt;/div&gt;
 &lt;/div&gt;
@@ -1588,6 +1592,8 @@ html&gt;body{padding:0}&lt;/style&gt;
 #pokemon-type-network .edge.immune { stroke:var(--viz-series-4); stroke-dasharray:2 4; stroke-width:1.7; }
 #pokemon-type-network .edge.active-out,
 #pokemon-type-network .edge.active-in { stroke-width:2.8; opacity:1; }
+#pokemon-type-network .edge.active-resisted-out { stroke:var(--viz-series-2); }
+#pokemon-type-network .edge.active-resisted-in { stroke:var(--viz-series-5); }
 #pokemon-type-network .edge.dim { opacity:.06; }
 #pokemon-type-network .node .node-hit { fill:transparent; stroke:transparent; }
 #pokemon-type-network .node .type-disc { stroke:color-mix(in srgb, var(--foreground) 18%, transparent); stroke-width:1.5; }
@@ -1603,6 +1609,10 @@ html&gt;body{padding:0}&lt;/style&gt;
 #pokemon-type-network .legend-line.strong { border-color:var(--viz-series-1); }
 #pokemon-type-network .legend-line.resisted { border-color:var(--viz-series-2); border-top-style:dashed; }
 #pokemon-type-network .legend-line.immune { border-color:var(--viz-series-4); border-top-style:dotted; }
+#pokemon-type-network .direction-legend { display:none; gap:14px; flex-wrap:wrap; }
+#pokemon-type-network .direction-legend.visible { display:inline-flex; }
+#pokemon-type-network .legend-line.resisted-out { border-color:var(--viz-series-2); border-top-style:dashed; }
+#pokemon-type-network .legend-line.resisted-in { border-color:var(--viz-series-5); border-top-style:dashed; }
 #pokemon-type-network .summary-row + .summary-row { margin-top:5px; }
 @media (max-width:520px){ #type-network-svg{height:700px;} #pokemon-type-network .viz-row{align-items:flex-start;} }
 &lt;/style&gt;
@@ -1666,7 +1676,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   types.forEach(t =&gt; { const o=document.createElement(&#x27;option&#x27;); o.value=t; o.textContent=t; select.appendChild(o); });
   const svg = d3.select(root.querySelector(&#x27;#type-network-svg&#x27;));
   const defs=svg.append(&#x27;defs&#x27;);
-  [[&#x27;arrow-strong&#x27;,&#x27;var(--viz-series-1)&#x27;],[&#x27;arrow-resisted&#x27;,&#x27;var(--viz-series-2)&#x27;],[&#x27;arrow-immune&#x27;,&#x27;var(--viz-series-4)&#x27;]].forEach(([id,c])=&gt;{
+  [[&#x27;arrow-strong&#x27;,&#x27;var(--viz-series-1)&#x27;],[&#x27;arrow-resisted&#x27;,&#x27;var(--viz-series-2)&#x27;],[&#x27;arrow-immune&#x27;,&#x27;var(--viz-series-4)&#x27;],[&#x27;arrow-resisted-out&#x27;,&#x27;var(--viz-series-2)&#x27;],[&#x27;arrow-resisted-in&#x27;,&#x27;var(--viz-series-5)&#x27;]].forEach(([id,c])=&gt;{
     defs.append(&#x27;marker&#x27;).attr(&#x27;id&#x27;,id).attr(&#x27;viewBox&#x27;,&#x27;0 -5 10 10&#x27;).attr(&#x27;refX&#x27;,34).attr(&#x27;refY&#x27;,0).attr(&#x27;markerWidth&#x27;,6).attr(&#x27;markerHeight&#x27;,6).attr(&#x27;orient&#x27;,&#x27;auto&#x27;).append(&#x27;path&#x27;).attr(&#x27;d&#x27;,&#x27;M0,-5L10,0L0,5&#x27;).attr(&#x27;fill&#x27;,c);
   });
   const g=svg.append(&#x27;g&#x27;);
@@ -1706,6 +1716,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   function list(items){ return items.length ? items.join(&#x27;, &#x27;) : &#x27;none&#x27;; }
   function focus(type){
     selected=type; select.value=type;
+    root.querySelector(&#x27;#direction-legend&#x27;).classList.toggle(&#x27;visible&#x27;,type!==&#x27;all&#x27;);
     const visibleLinks=links.filter(relationVisible);
     const related=new Set(type===&#x27;all&#x27;?[]:visibleLinks.flatMap(d=&gt;d.source.id===type?[d.target.id]:d.target.id===type?[d.source.id]:[]));
     node.attr(&#x27;class&#x27;,d=&gt;{
@@ -1717,9 +1728,13 @@ html&gt;body{padding:0}&lt;/style&gt;
     edge.style(&#x27;display&#x27;,d=&gt;relationVisible(d)?null:&#x27;none&#x27;).attr(&#x27;class&#x27;,d=&gt;{
       const base=`edge ${d.relation}`;
       if(type===&#x27;all&#x27;)return base;
-      if(d.source.id===type)return `${base} active-out`;
-      if(d.target.id===type)return `${base} active-in`;
+      if(d.source.id===type)return `${base} active-out${d.relation===&#x27;strong&#x27;?&#x27;&#x27;:&#x27; active-resisted-out&#x27;}`;
+      if(d.target.id===type)return `${base} active-in${d.relation===&#x27;strong&#x27;?&#x27;&#x27;:&#x27; active-resisted-in&#x27;}`;
       return `${base} dim`;
+    }).attr(&#x27;marker-end&#x27;,d=&gt;{
+      if(type!==&#x27;all&#x27; &amp;&amp; d.relation!==&#x27;strong&#x27; &amp;&amp; d.source.id===type)return &#x27;url(#arrow-resisted-out)&#x27;;
+      if(type!==&#x27;all&#x27; &amp;&amp; d.relation!==&#x27;strong&#x27; &amp;&amp; d.target.id===type)return &#x27;url(#arrow-resisted-in)&#x27;;
+      return `url(#arrow-${d.relation})`;
     });
     if(type===&#x27;all&#x27;){
       root.querySelector(&#x27;#matchup-summary&#x27;).textContent=&#x27;Select a type to see its offensive and defensive Pokémon GO matchups.&#x27;;

@@ -6,7 +6,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>Pokémon Type Network — Draft</title>
+<title>Pokémon GO Type Network — Draft</title>
 <style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
 </head>
 <body>
@@ -1548,20 +1548,29 @@ html&gt;body{padding:0}&lt;/style&gt;
 })();
 &lt;/script&gt;
 &lt;div id=&quot;pokemon-type-network&quot;&gt;
-  &lt;h2&gt;Pokémon type advantage network&lt;/h2&gt;
+  &lt;h2&gt;Pokémon GO type matchup network&lt;/h2&gt;
   &lt;div class=&quot;viz-controls&quot;&gt;
     &lt;label class=&quot;form-label&quot; for=&quot;type-focus&quot;&gt;Focus on a type
       &lt;select id=&quot;type-focus&quot; class=&quot;form-select&quot;&gt;&lt;option value=&quot;all&quot;&gt;All types&lt;/option&gt;&lt;/select&gt;
     &lt;/label&gt;
+    &lt;label class=&quot;form-label&quot; for=&quot;relation-view&quot;&gt;Show relationships
+      &lt;select id=&quot;relation-view&quot; class=&quot;form-select&quot;&gt;
+        &lt;option value=&quot;all&quot;&gt;All non-neutral&lt;/option&gt;
+        &lt;option value=&quot;strong&quot;&gt;Super effective only&lt;/option&gt;
+        &lt;option value=&quot;resisted&quot;&gt;Resisted only&lt;/option&gt;
+      &lt;/select&gt;
+    &lt;/label&gt;
     &lt;button type=&quot;button&quot; id=&quot;reset-network&quot; class=&quot;btn btn-ghost&quot;&gt;Reset view&lt;/button&gt;
   &lt;/div&gt;
-  &lt;div id=&quot;matchup-summary&quot; class=&quot;card&quot; aria-live=&quot;polite&quot;&gt;Select a type to isolate its attacking advantages and weaknesses.&lt;/div&gt;
+  &lt;div id=&quot;matchup-summary&quot; class=&quot;card&quot; aria-live=&quot;polite&quot;&gt;Select a type to see its offensive and defensive Pokémon GO matchups.&lt;/div&gt;
   &lt;svg id=&quot;type-network-svg&quot; role=&quot;img&quot; aria-labelledby=&quot;type-network-title type-network-desc&quot;&gt;
-    &lt;title id=&quot;type-network-title&quot;&gt;Directed network of Pokémon type advantages&lt;/title&gt;
-    &lt;desc id=&quot;type-network-desc&quot;&gt;An arrow from one type to another means attacks of the first type are super effective against the second type.&lt;/desc&gt;
+    &lt;title id=&quot;type-network-title&quot;&gt;Directed network of Pokémon GO type matchups&lt;/title&gt;
+    &lt;desc id=&quot;type-network-desc&quot;&gt;Arrows point from the attacking move type to the defending Pokémon type. Solid arrows are super effective; dashed arrows are resisted; dotted arrows represent the Pokémon GO equivalent of immunity.&lt;/desc&gt;
   &lt;/svg&gt;
   &lt;div class=&quot;viz-row text-small text-muted&quot; aria-label=&quot;Legend&quot;&gt;
-    &lt;span&gt;&lt;strong&gt;A → B&lt;/strong&gt; means A attacks B for 2× damage&lt;/span&gt;
+    &lt;span class=&quot;legend-item&quot;&gt;&lt;i class=&quot;legend-line strong&quot;&gt;&lt;/i&gt;&lt;strong&gt;1.6×&lt;/strong&gt; super effective&lt;/span&gt;
+    &lt;span class=&quot;legend-item&quot;&gt;&lt;i class=&quot;legend-line resisted&quot;&gt;&lt;/i&gt;&lt;strong&gt;0.625×&lt;/strong&gt; resisted&lt;/span&gt;
+    &lt;span class=&quot;legend-item&quot;&gt;&lt;i class=&quot;legend-line immune&quot;&gt;&lt;/i&gt;&lt;strong&gt;0.391×&lt;/strong&gt; heavily resisted (main-series immunity)&lt;/span&gt;
     &lt;span&gt;Choose or click a type to isolate its relationships&lt;/span&gt;
   &lt;/div&gt;
 &lt;/div&gt;
@@ -1573,20 +1582,28 @@ html&gt;body{padding:0}&lt;/style&gt;
 #pokemon-type-network .form-label { min-width:210px; }
 #pokemon-type-network .card { margin-bottom:8px; }
 #type-network-svg { width:100%; height:620px; display:block; overflow:visible; }
-#pokemon-type-network .edge { fill:none; stroke:var(--border); stroke-width:1.2; opacity:.52; }
-#pokemon-type-network .edge.active-out { stroke:var(--viz-series-1); stroke-width:2.5; opacity:1; }
-#pokemon-type-network .edge.active-in { stroke:var(--viz-series-3); stroke-width:2.5; opacity:1; }
+#pokemon-type-network .edge { fill:none; stroke-width:1.25; opacity:.38; }
+#pokemon-type-network .edge.strong { stroke:var(--viz-series-1); }
+#pokemon-type-network .edge.resisted { stroke:var(--viz-series-2); stroke-dasharray:6 4; }
+#pokemon-type-network .edge.immune { stroke:var(--viz-series-4); stroke-dasharray:2 4; stroke-width:1.7; }
+#pokemon-type-network .edge.active-out,
+#pokemon-type-network .edge.active-in { stroke-width:2.8; opacity:1; }
 #pokemon-type-network .edge.dim { opacity:.06; }
 #pokemon-type-network .node .node-hit { fill:transparent; stroke:transparent; }
 #pokemon-type-network .node .type-disc { stroke:color-mix(in srgb, var(--foreground) 18%, transparent); stroke-width:1.5; }
 #pokemon-type-network .node .type-icon { pointer-events:none; }
 #pokemon-type-network .node .type-label { fill:var(--foreground); font-size:12px; font-weight:500; text-anchor:middle; dominant-baseline:middle; pointer-events:none; paint-order:stroke; stroke:var(--background); stroke-width:3px; stroke-linejoin:round; }
 #pokemon-type-network .node.active .type-disc { stroke:var(--foreground); stroke-width:3; }
-#pokemon-type-network .node.target .type-disc { stroke:var(--viz-series-1); stroke-width:3; }
-#pokemon-type-network .node.attacker .type-disc { stroke:var(--viz-series-3); stroke-width:3; }
+#pokemon-type-network .node.related .type-disc { stroke:var(--foreground); stroke-width:2.5; }
 #pokemon-type-network .node.dim { opacity:.18; }
 #pokemon-type-network .node { touch-action:none; }
-#pokemon-type-network .viz-row { justify-content:space-between; margin-top:6px; }
+#pokemon-type-network .viz-row { justify-content:flex-start; gap:14px; margin-top:6px; }
+#pokemon-type-network .legend-item { display:inline-flex; align-items:center; gap:5px; }
+#pokemon-type-network .legend-line { display:inline-block; width:25px; height:0; border-top:2px solid; }
+#pokemon-type-network .legend-line.strong { border-color:var(--viz-series-1); }
+#pokemon-type-network .legend-line.resisted { border-color:var(--viz-series-2); border-top-style:dashed; }
+#pokemon-type-network .legend-line.immune { border-color:var(--viz-series-4); border-top-style:dotted; }
+#pokemon-type-network .summary-row + .summary-row { margin-top:5px; }
 @media (max-width:520px){ #type-network-svg{height:700px;} #pokemon-type-network .viz-row{align-items:flex-start;} }
 &lt;/style&gt;
 
@@ -1601,6 +1618,19 @@ html&gt;body{padding:0}&lt;/style&gt;
     Poison:[&#x27;Grass&#x27;,&#x27;Fairy&#x27;], Ground:[&#x27;Fire&#x27;,&#x27;Electric&#x27;,&#x27;Poison&#x27;,&#x27;Rock&#x27;,&#x27;Steel&#x27;], Flying:[&#x27;Grass&#x27;,&#x27;Fighting&#x27;,&#x27;Bug&#x27;],
     Psychic:[&#x27;Fighting&#x27;,&#x27;Poison&#x27;], Bug:[&#x27;Grass&#x27;,&#x27;Psychic&#x27;,&#x27;Dark&#x27;], Rock:[&#x27;Fire&#x27;,&#x27;Ice&#x27;,&#x27;Flying&#x27;,&#x27;Bug&#x27;], Ghost:[&#x27;Psychic&#x27;,&#x27;Ghost&#x27;],
     Dragon:[&#x27;Dragon&#x27;], Dark:[&#x27;Psychic&#x27;,&#x27;Ghost&#x27;], Steel:[&#x27;Ice&#x27;,&#x27;Rock&#x27;,&#x27;Fairy&#x27;], Fairy:[&#x27;Fighting&#x27;,&#x27;Dragon&#x27;,&#x27;Dark&#x27;]
+  };
+  const resists = {
+    Normal:[&#x27;Rock&#x27;,&#x27;Steel&#x27;], Fire:[&#x27;Fire&#x27;,&#x27;Water&#x27;,&#x27;Rock&#x27;,&#x27;Dragon&#x27;], Water:[&#x27;Water&#x27;,&#x27;Grass&#x27;,&#x27;Dragon&#x27;],
+    Electric:[&#x27;Electric&#x27;,&#x27;Grass&#x27;,&#x27;Dragon&#x27;], Grass:[&#x27;Fire&#x27;,&#x27;Grass&#x27;,&#x27;Poison&#x27;,&#x27;Flying&#x27;,&#x27;Bug&#x27;,&#x27;Dragon&#x27;,&#x27;Steel&#x27;],
+    Ice:[&#x27;Fire&#x27;,&#x27;Water&#x27;,&#x27;Ice&#x27;,&#x27;Steel&#x27;], Fighting:[&#x27;Poison&#x27;,&#x27;Flying&#x27;,&#x27;Psychic&#x27;,&#x27;Bug&#x27;,&#x27;Fairy&#x27;],
+    Poison:[&#x27;Poison&#x27;,&#x27;Ground&#x27;,&#x27;Rock&#x27;,&#x27;Ghost&#x27;], Ground:[&#x27;Grass&#x27;,&#x27;Bug&#x27;], Flying:[&#x27;Electric&#x27;,&#x27;Rock&#x27;,&#x27;Steel&#x27;],
+    Psychic:[&#x27;Psychic&#x27;,&#x27;Steel&#x27;], Bug:[&#x27;Fire&#x27;,&#x27;Fighting&#x27;,&#x27;Poison&#x27;,&#x27;Flying&#x27;,&#x27;Ghost&#x27;,&#x27;Steel&#x27;,&#x27;Fairy&#x27;],
+    Rock:[&#x27;Fighting&#x27;,&#x27;Ground&#x27;,&#x27;Steel&#x27;], Ghost:[&#x27;Dark&#x27;], Dragon:[&#x27;Steel&#x27;], Dark:[&#x27;Fighting&#x27;,&#x27;Dark&#x27;,&#x27;Fairy&#x27;],
+    Steel:[&#x27;Fire&#x27;,&#x27;Water&#x27;,&#x27;Electric&#x27;,&#x27;Steel&#x27;], Fairy:[&#x27;Fire&#x27;,&#x27;Poison&#x27;,&#x27;Steel&#x27;]
+  };
+  const immunities = {
+    Normal:[&#x27;Ghost&#x27;], Electric:[&#x27;Ground&#x27;], Fighting:[&#x27;Ghost&#x27;], Poison:[&#x27;Steel&#x27;], Ground:[&#x27;Flying&#x27;],
+    Psychic:[&#x27;Dark&#x27;], Ghost:[&#x27;Normal&#x27;], Dragon:[&#x27;Fairy&#x27;]
   };
   const typeStyle = {
     Normal:[&#x27;#919AA2&#x27;,&#x27;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNDgxIDI1NkM0ODEgMzgwLjI2NCAzODAuMjY0IDQ4MSAyNTYgNDgxQzEzMS43MzYgNDgxIDMxIDM4MC4yNjQgMzEgMjU2QzMxIDEzMS43MzYgMTMxLjczNiAzMSAyNTYgMzFDMzgwLjI2NCAzMSA0ODEgMTMxLjczNiA0ODEgMjU2Wk0zODQuNTcxIDI1NkMzODQuNTcxIDMyNy4wMDggMzI3LjAwOCAzODQuNTcxIDI1NiAzODQuNTcxQzE4NC45OTIgMzg0LjU3MSAxMjcuNDI5IDMyNy4wMDggMTI3LjQyOSAyNTZDMTI3LjQyOSAxODQuOTkyIDE4NC45OTIgMTI3LjQyOSAyNTYgMTI3LjQyOUMzMjcuMDA4IDEyNy40MjkgMzg0LjU3MSAxODQuOTkyIDM4NC41NzEgMjU2WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==&#x27;],
@@ -1623,23 +1653,35 @@ html&gt;body{padding:0}&lt;/style&gt;
     Fairy:[&#x27;#EC8FE6&#x27;,&#x27;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTAyLjcyNiA0MDUuOTc4TDE4NC44NDggMzgyLjE2NkwyNTUuNzc4IDUxMS44NTdDMjU1Ljg3MSA1MTIuMDI1IDI1Ni4xMTIgNTEyLjAyNSAyNTYuMjA0IDUxMS44NTdMMzI3LjEzNCAzODIuMTY2TDQwOS4yNTcgNDA1Ljk3OEM0MDkuNDQxIDQwNi4wMzEgNDA5LjYxMiA0MDUuODYgNDA5LjU1NyA0MDUuNjc2TDM4NS43NDEgMzI1LjE3OUw1MTEuODU2IDI1Ni4yMDRDNTEyLjAyNSAyNTYuMTEyIDUxMi4wMjUgMjU1Ljg3MSA1MTEuODU3IDI1NS43NzlMMzg0LjcwMiAxODYuMjM1TDQwOS41NTcgMTAyLjIyNUM0MDkuNjEyIDEwMi4wNDEgNDA5LjQ0MSAxMDEuODcgNDA5LjI1NyAxMDEuOTIzTDMyNS4yMDggMTI2LjI5NEwyNTYuMjA0IDAuMTI2MTg4QzI1Ni4xMTIgLTAuMDQyMDU5NyAyNTUuODcxIC0wLjA0MjA2NDQgMjU1Ljc3OSAwLjEyNjE4NEwxODYuNzc1IDEyNi4yOTRMMTAyLjcyNiAxMDEuOTIzQzEwMi41NDIgMTAxLjg3IDEwMi4zNzEgMTAyLjA0MSAxMDIuNDI2IDEwMi4yMjVMMTI3LjI4MSAxODYuMjM1TDAuMTI2MTg4IDI1NS43NzlDLTAuMDQyMDU5NyAyNTUuODcxIC0wLjA0MjA2NDQgMjU2LjExMiAwLjEyNjE4NCAyNTYuMjA0TDEyNi4yNDEgMzI1LjE3OUwxMDIuNDI2IDQwNS42NzZDMTAyLjM3MSA0MDUuODYgMTAyLjU0MiA0MDYuMDMxIDEwMi43MjYgNDA1Ljk3OFpNMTY2LjQ1MiAyNTYuODc2TDIyNC42MzEgMjg4LjY5NUwyNTYuNDUgMzQ2Ljg3M0MyNTYuNTQyIDM0Ny4wNDIgMjU2Ljc4NCAzNDcuMDQyIDI1Ni44NzYgMzQ2Ljg3M0wyODguNjk1IDI4OC42OTVMMzQ2Ljg3MyAyNTYuODc2QzM0Ny4wNDEgMjU2Ljc4NCAzNDcuMDQxIDI1Ni41NDIgMzQ2Ljg3MyAyNTYuNDVMMjg4LjY5NSAyMjQuNjMxTDI1Ni44NzYgMTY2LjQ1M0MyNTYuNzg0IDE2Ni4yODQgMjU2LjU0MiAxNjYuMjg0IDI1Ni40NSAxNjYuNDUzTDIyNC42MzEgMjI0LjYzMUwxNjYuNDUyIDI1Ni40NUMxNjYuMjg0IDI1Ni41NDIgMTY2LjI4NCAyNTYuNzg0IDE2Ni40NTIgMjU2Ljg3NloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=&#x27;]
   };
   const nodes = types.map(id =&gt; ({id, color:typeStyle[id][0], icon:typeStyle[id][1]}));
-  const links = types.flatMap(source =&gt; wins[source].map(target =&gt; ({source,target})));
+  const links = [
+    ...types.flatMap(source =&gt; wins[source].map(target =&gt; ({source,target,relation:&#x27;strong&#x27;,multiplier:1.6}))),
+    ...types.flatMap(source =&gt; resists[source].map(target =&gt; ({source,target,relation:&#x27;resisted&#x27;,multiplier:.625}))),
+    ...types.flatMap(source =&gt; (immunities[source]||[]).map(target =&gt; ({source,target,relation:&#x27;immune&#x27;,multiplier:.390625})))
+  ];
+  const layoutLinks = types.flatMap(source =&gt; wins[source].map(target =&gt; ({source,target})));
+  const nodeById = new Map(nodes.map(d=&gt;[d.id,d]));
+  links.forEach(d=&gt;{ d.source=nodeById.get(d.source); d.target=nodeById.get(d.target); });
   const select = root.querySelector(&#x27;#type-focus&#x27;);
+  const relationSelect = root.querySelector(&#x27;#relation-view&#x27;);
   types.forEach(t =&gt; { const o=document.createElement(&#x27;option&#x27;); o.value=t; o.textContent=t; select.appendChild(o); });
   const svg = d3.select(root.querySelector(&#x27;#type-network-svg&#x27;));
   const defs=svg.append(&#x27;defs&#x27;);
-  [[&#x27;arrow&#x27;,&#x27;var(--border)&#x27;],[&#x27;arrow-out&#x27;,&#x27;var(--viz-series-1)&#x27;],[&#x27;arrow-in&#x27;,&#x27;var(--viz-series-3)&#x27;]].forEach(([id,c])=&gt;{
+  [[&#x27;arrow-strong&#x27;,&#x27;var(--viz-series-1)&#x27;],[&#x27;arrow-resisted&#x27;,&#x27;var(--viz-series-2)&#x27;],[&#x27;arrow-immune&#x27;,&#x27;var(--viz-series-4)&#x27;]].forEach(([id,c])=&gt;{
     defs.append(&#x27;marker&#x27;).attr(&#x27;id&#x27;,id).attr(&#x27;viewBox&#x27;,&#x27;0 -5 10 10&#x27;).attr(&#x27;refX&#x27;,34).attr(&#x27;refY&#x27;,0).attr(&#x27;markerWidth&#x27;,6).attr(&#x27;markerHeight&#x27;,6).attr(&#x27;orient&#x27;,&#x27;auto&#x27;).append(&#x27;path&#x27;).attr(&#x27;d&#x27;,&#x27;M0,-5L10,0L0,5&#x27;).attr(&#x27;fill&#x27;,c);
   });
   const g=svg.append(&#x27;g&#x27;);
-  const edge=g.append(&#x27;g&#x27;).selectAll(&#x27;path&#x27;).data(links).join(&#x27;path&#x27;).attr(&#x27;class&#x27;,&#x27;edge&#x27;).attr(&#x27;marker-end&#x27;,&#x27;url(#arrow)&#x27;);
+  const edge=g.append(&#x27;g&#x27;).selectAll(&#x27;path&#x27;).data(links).join(&#x27;path&#x27;)
+    .attr(&#x27;class&#x27;,d=&gt;`edge ${d.relation}`)
+    .attr(&#x27;marker-end&#x27;,d=&gt;`url(#arrow-${d.relation})`)
+    .attr(&#x27;aria-label&#x27;,d=&gt;`${d.source.id} attacks ${d.target.id} for ${d.multiplier} times damage`);
+  edge.append(&#x27;title&#x27;).text(d=&gt;`${d.source.id} → ${d.target.id}: ${d.multiplier}× damage`);
   const node=g.append(&#x27;g&#x27;).selectAll(&#x27;g&#x27;).data(nodes).join(&#x27;g&#x27;).attr(&#x27;class&#x27;,&#x27;node cursor-interaction&#x27;).attr(&#x27;role&#x27;,&#x27;button&#x27;).attr(&#x27;aria-label&#x27;,d=&gt;`Focus on ${d.id}`).on(&#x27;click&#x27;,(e,d)=&gt;focus(d.id));
   node.append(&#x27;circle&#x27;).attr(&#x27;class&#x27;,&#x27;node-hit&#x27;).attr(&#x27;r&#x27;,32);
   node.append(&#x27;circle&#x27;).attr(&#x27;class&#x27;,&#x27;type-disc&#x27;).attr(&#x27;cy&#x27;,-8).attr(&#x27;r&#x27;,18).attr(&#x27;fill&#x27;,d=&gt;d.color);
   node.append(&#x27;image&#x27;).attr(&#x27;class&#x27;,&#x27;type-icon&#x27;).attr(&#x27;href&#x27;,d=&gt;d.icon).attr(&#x27;x&#x27;,-11).attr(&#x27;y&#x27;,-19).attr(&#x27;width&#x27;,22).attr(&#x27;height&#x27;,22).attr(&#x27;preserveAspectRatio&#x27;,&#x27;xMidYMid meet&#x27;);
   node.append(&#x27;text&#x27;).attr(&#x27;class&#x27;,&#x27;type-label&#x27;).attr(&#x27;y&#x27;,19).text(d=&gt;d.id);
   node.append(&#x27;title&#x27;).text(d=&gt;d.id);
-  let sim, width=700, height=620, selected=&#x27;all&#x27;;
+  let sim, width=700, height=620, selected=&#x27;all&#x27;, selectedView=&#x27;all&#x27;;
   function edgePath(d){
     if(d.source.id===d.target.id){
       const x=d.source.x, y=d.source.y;
@@ -1651,36 +1693,47 @@ html&gt;body{padding:0}&lt;/style&gt;
     width=root.querySelector(&#x27;#type-network-svg&#x27;).getBoundingClientRect().width || 700;
     height=width&lt;520?700:620; svg.attr(&#x27;viewBox&#x27;,`0 0 ${width} ${height}`);
     if(sim) sim.stop();
-    sim=d3.forceSimulation(nodes).force(&#x27;link&#x27;,d3.forceLink(links).id(d=&gt;d.id).distance(width&lt;520?108:130).strength(.18)).force(&#x27;charge&#x27;,d3.forceManyBody().strength(width&lt;520?-390:-560)).force(&#x27;center&#x27;,d3.forceCenter(width/2,height/2)).force(&#x27;collision&#x27;,d3.forceCollide(43)).on(&#x27;tick&#x27;,()=&gt;{
+    sim=d3.forceSimulation(nodes).force(&#x27;link&#x27;,d3.forceLink(layoutLinks).id(d=&gt;d.id).distance(width&lt;520?108:130).strength(.18)).force(&#x27;charge&#x27;,d3.forceManyBody().strength(width&lt;520?-390:-560)).force(&#x27;center&#x27;,d3.forceCenter(width/2,height/2)).force(&#x27;collision&#x27;,d3.forceCollide(43)).on(&#x27;tick&#x27;,()=&gt;{
       nodes.forEach(d=&gt;{d.x=Math.max(38,Math.min(width-38,d.x));d.y=Math.max(38,Math.min(height-38,d.y));});
       edge.attr(&#x27;d&#x27;,edgePath);
       node.attr(&#x27;transform&#x27;,d=&gt;`translate(${d.x},${d.y})`);
     });
   }
   node.call(d3.drag().on(&#x27;start&#x27;,(e,d)=&gt;{if(!e.active)sim.alphaTarget(.25).restart();d.fx=d.x;d.fy=d.y;}).on(&#x27;drag&#x27;,(e,d)=&gt;{d.fx=e.x;d.fy=e.y;}).on(&#x27;end&#x27;,(e,d)=&gt;{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
+  function relationVisible(d){
+    return selectedView===&#x27;all&#x27; || (selectedView===&#x27;strong&#x27; &amp;&amp; d.relation===&#x27;strong&#x27;) || (selectedView===&#x27;resisted&#x27; &amp;&amp; d.relation!==&#x27;strong&#x27;);
+  }
+  function list(items){ return items.length ? items.join(&#x27;, &#x27;) : &#x27;none&#x27;; }
   function focus(type){
     selected=type; select.value=type;
-    const outgoing=new Set(type===&#x27;all&#x27;?[]:wins[type]);
-    const incoming=new Set(type===&#x27;all&#x27;?[]:types.filter(t=&gt;wins[t].includes(type)));
+    const visibleLinks=links.filter(relationVisible);
+    const related=new Set(type===&#x27;all&#x27;?[]:visibleLinks.flatMap(d=&gt;d.source.id===type?[d.target.id]:d.target.id===type?[d.source.id]:[]));
     node.attr(&#x27;class&#x27;,d=&gt;{
       if(type===&#x27;all&#x27;)return &#x27;node cursor-interaction&#x27;;
       if(d.id===type)return &#x27;node cursor-interaction active&#x27;;
-      if(outgoing.has(d.id))return &#x27;node cursor-interaction target&#x27;;
-      if(incoming.has(d.id))return &#x27;node cursor-interaction attacker&#x27;;
+      if(related.has(d.id))return &#x27;node cursor-interaction related&#x27;;
       return &#x27;node cursor-interaction dim&#x27;;
     });
-    edge.attr(&#x27;class&#x27;,d=&gt;{
-      if(type===&#x27;all&#x27;)return &#x27;edge&#x27;;
-      if(d.source.id===type)return &#x27;edge active-out&#x27;;
-      if(d.target.id===type)return &#x27;edge active-in&#x27;;
-      return &#x27;edge dim&#x27;;
-    }).attr(&#x27;marker-end&#x27;,d=&gt;type===&#x27;all&#x27;?&#x27;url(#arrow)&#x27;:d.source.id===type?&#x27;url(#arrow-out)&#x27;:d.target.id===type?&#x27;url(#arrow-in)&#x27;:&#x27;url(#arrow)&#x27;);
-    root.querySelector(&#x27;#matchup-summary&#x27;).innerHTML=type===&#x27;all&#x27;
-      ? &#x27;Select a type to isolate its attacking advantages and weaknesses.&#x27;
-      : `&lt;strong&gt;${type}&lt;/strong&gt; is super effective against &lt;strong&gt;${[...outgoing].join(&#x27;, &#x27;)||&#x27;no types&#x27;}&lt;/strong&gt;. It is weak to attacks from &lt;strong&gt;${[...incoming].join(&#x27;, &#x27;)||&#x27;no types&#x27;}&lt;/strong&gt;.`;
+    edge.style(&#x27;display&#x27;,d=&gt;relationVisible(d)?null:&#x27;none&#x27;).attr(&#x27;class&#x27;,d=&gt;{
+      const base=`edge ${d.relation}`;
+      if(type===&#x27;all&#x27;)return base;
+      if(d.source.id===type)return `${base} active-out`;
+      if(d.target.id===type)return `${base} active-in`;
+      return `${base} dim`;
+    });
+    if(type===&#x27;all&#x27;){
+      root.querySelector(&#x27;#matchup-summary&#x27;).textContent=&#x27;Select a type to see its offensive and defensive Pokémon GO matchups.&#x27;;
+      return;
+    }
+    const atkStrong=wins[type], atkResist=resists[type], atkImmune=immunities[type]||[];
+    const defWeak=types.filter(t=&gt;wins[t].includes(type));
+    const defResist=types.filter(t=&gt;resists[t].includes(type));
+    const defImmune=types.filter(t=&gt;(immunities[t]||[]).includes(type));
+    root.querySelector(&#x27;#matchup-summary&#x27;).innerHTML=`&lt;div class=&quot;summary-row&quot;&gt;&lt;strong&gt;Attack with ${type}:&lt;/strong&gt; 1.6× vs ${list(atkStrong)}; 0.625× vs ${list(atkResist)}; 0.391× vs ${list(atkImmune)}.&lt;/div&gt;&lt;div class=&quot;summary-row&quot;&gt;&lt;strong&gt;Defend as ${type}:&lt;/strong&gt; weak to ${list(defWeak)}; resists ${list(defResist)}; heavily resists ${list(defImmune)}.&lt;/div&gt;`;
   }
   select.addEventListener(&#x27;change&#x27;,e=&gt;focus(e.target.value));
-  root.querySelector(&#x27;#reset-network&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{focus(&#x27;all&#x27;);nodes.forEach(d=&gt;{d.fx=null;d.fy=null;});sim.alpha(1).restart();});
+  relationSelect.addEventListener(&#x27;change&#x27;,e=&gt;{selectedView=e.target.value;focus(selected);});
+  root.querySelector(&#x27;#reset-network&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{selectedView=&#x27;all&#x27;;relationSelect.value=&#x27;all&#x27;;focus(&#x27;all&#x27;);nodes.forEach(d=&gt;{d.fx=null;d.fy=null;});sim.alpha(1).restart();});
   new ResizeObserver(redraw).observe(root);
   redraw(); focus(&#x27;all&#x27;);
 })();

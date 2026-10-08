@@ -1840,8 +1840,8 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;label class=&quot;form-label&quot; for=&quot;co-min-count&quot;&gt;Minimum shared forms
         &lt;select id=&quot;co-min-count&quot; class=&quot;form-select&quot;&gt;
           &lt;option value=&quot;1&quot;&gt;1+ (all pairs)&lt;/option&gt;
-          &lt;option value=&quot;3&quot; selected&gt;3+&lt;/option&gt;
-          &lt;option value=&quot;5&quot;&gt;5+&lt;/option&gt;
+          &lt;option value=&quot;3&quot;&gt;3+&lt;/option&gt;
+          &lt;option value=&quot;5&quot; selected&gt;5+&lt;/option&gt;
           &lt;option value=&quot;8&quot;&gt;8+&lt;/option&gt;
           &lt;option value=&quot;12&quot;&gt;12+&lt;/option&gt;
         &lt;/select&gt;
@@ -1917,6 +1917,8 @@ html&gt;body{padding:0}&lt;/style&gt;
 #pokemon-type-network .co-edge { fill:none; stroke:color-mix(in srgb, var(--foreground) 34%, transparent); cursor:pointer; transition:opacity .15s, stroke .15s; }
 #pokemon-type-network .co-edge:hover,
 #pokemon-type-network .co-edge.active { stroke:var(--viz-series-1); opacity:1 !important; }
+#pokemon-type-network .co-edge:focus { outline:none; }
+#pokemon-type-network .co-edge:focus-visible { stroke:var(--viz-series-1); opacity:1 !important; }
 #pokemon-type-network .co-edge.dim { opacity:.05 !important; }
 #pokemon-type-network .co-node .type-disc { stroke:color-mix(in srgb, var(--foreground) 18%, transparent); stroke-width:1.5; }
 #pokemon-type-network .co-node .type-icon { pointer-events:none; }
@@ -2096,7 +2098,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   const coTypeSelect=root.querySelector(&#x27;#co-type-focus&#x27;);
   const coMinSelect=root.querySelector(&#x27;#co-min-count&#x27;);
   types.forEach(t=&gt;{const o=document.createElement(&#x27;option&#x27;);o.value=t;o.textContent=t;coTypeSelect.appendChild(o);});
-  let coSim, coWidth=700, coHeight=650, coMin=3, coFocus=&#x27;all&#x27;, selectedCoLink=null, coEdge, coLabels;
+  let coSim, coWidth=700, coHeight=650, coMin=5, coFocus=&#x27;all&#x27;, selectedCoLink=null, coEdge, coLabels;
   const widthScale=d3.scaleSqrt().domain([1,d3.max(cooccurrenceLinks,d=&gt;d.count)]).range([1.1,11]);
   function coVisibleLinks(){return cooccurrenceLinks.filter(d=&gt;d.count&gt;=coMin);}
   function coLinkName(d){return `${d.source.id} + ${d.target.id}: ${d.count} Pokémon GO ${d.count===1?&#x27;form&#x27;:&#x27;forms&#x27;}`;}
@@ -2163,7 +2165,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   coNode.call(d3.drag().on(&#x27;start&#x27;,(e,d)=&gt;{if(!e.active)coSim.alphaTarget(.25).restart();d.fx=d.x;d.fy=d.y;}).on(&#x27;drag&#x27;,(e,d)=&gt;{d.fx=e.x;d.fy=e.y;}).on(&#x27;end&#x27;,(e,d)=&gt;{if(!e.active)coSim.alphaTarget(0);d.fx=null;d.fy=null;}));
   coTypeSelect.addEventListener(&#x27;change&#x27;,e=&gt;setCoFocus(e.target.value));
   coMinSelect.addEventListener(&#x27;change&#x27;,e=&gt;{coMin=+e.target.value;selectedCoLink=null;renderCoSummary(null);refreshCoEdges();});
-  root.querySelector(&#x27;#reset-co-network&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{coMin=3;coMinSelect.value=&#x27;3&#x27;;coFocus=&#x27;all&#x27;;coTypeSelect.value=&#x27;all&#x27;;selectedCoLink=null;coNodes.forEach(d=&gt;{d.fx=null;d.fy=null;});renderCoSummary(null);coRedraw();});
+  root.querySelector(&#x27;#reset-co-network&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{coMin=5;coMinSelect.value=&#x27;5&#x27;;coFocus=&#x27;all&#x27;;coTypeSelect.value=&#x27;all&#x27;;selectedCoLink=null;coNodes.forEach(d=&gt;{d.fx=null;d.fy=null;});renderCoSummary(null);coRedraw();});
   const tabs=[root.querySelector(&#x27;#tab-matchups&#x27;),root.querySelector(&#x27;#tab-cooccurrence&#x27;)];
   function activateTab(tab){
     const isCo=tab.id===&#x27;tab-cooccurrence&#x27;;

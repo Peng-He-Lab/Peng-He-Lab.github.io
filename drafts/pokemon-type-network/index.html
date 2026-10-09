@@ -2248,7 +2248,10 @@ html&gt;body{padding:0}&lt;/style&gt;
     const summary=root.querySelector(&#x27;#calculator-summary&#x27;);summary.replaceChildren();
     const headline=document.createElement(&#x27;div&#x27;);
     const strong=document.createElement(&#x27;strong&#x27;);strong.textContent=`Best overall matchup against ${defenderLabel}: `;
-    headline.append(strong,document.createTextNode(`${best.map(d=&gt;d.type).join(&#x27;, &#x27;)} — deals ${formatMultiplier(best[0].dealt)}, receives up to ${formatMultiplier(best[0].received)}`));
+    const bestDetail=best.length===1
+      ? `${best[0].type} — deals ${formatMultiplier(best[0].dealt)}, receives up to ${formatMultiplier(best[0].received)}`
+      : `${best.map(d=&gt;d.type).join(&#x27;, &#x27;)} — tied at matchup score ${best[0].score.toFixed(2).replace(/0+$/,&#x27;&#x27;).replace(/\.$/,&#x27;&#x27;)}`;
+    headline.append(strong,document.createTextNode(bestDetail));
     const detail=document.createElement(&#x27;div&#x27;);detail.className=&#x27;text-muted&#x27;;
     detail.textContent=`Matchup score ${best[0].score.toFixed(2).replace(/0+$/,&#x27;&#x27;).replace(/\.$/,&#x27;&#x27;)} = damage dealt ÷ worst incoming STAB damage. Attack type and Pokémon type are assumed to be the same.`;
     summary.append(headline,detail);

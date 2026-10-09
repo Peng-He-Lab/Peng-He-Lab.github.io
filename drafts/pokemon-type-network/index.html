@@ -1801,6 +1801,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;div class=&quot;network-tabs&quot; role=&quot;tablist&quot; aria-label=&quot;Pokémon type network views&quot;&gt;
     &lt;button type=&quot;button&quot; class=&quot;network-tab active&quot; id=&quot;tab-matchups&quot; role=&quot;tab&quot; aria-selected=&quot;true&quot; aria-controls=&quot;panel-matchups&quot;&gt;Type matchups&lt;/button&gt;
     &lt;button type=&quot;button&quot; class=&quot;network-tab&quot; id=&quot;tab-cooccurrence&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot; aria-controls=&quot;panel-cooccurrence&quot;&gt;Dual-type frequency&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;network-tab&quot; id=&quot;tab-calculator&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot; aria-controls=&quot;panel-calculator&quot;&gt;Type calculator&lt;/button&gt;
   &lt;/div&gt;
   &lt;section id=&quot;panel-matchups&quot; class=&quot;network-panel active&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;tab-matchups&quot;&gt;
   &lt;div class=&quot;viz-controls&quot;&gt;
@@ -1860,6 +1861,21 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;span class=&quot;legend-item&quot;&gt;&lt;i class=&quot;legend-line co-thin&quot;&gt;&lt;/i&gt;fewer shared forms&lt;/span&gt;
       &lt;span class=&quot;legend-item&quot;&gt;&lt;i class=&quot;legend-line co-thick&quot;&gt;&lt;/i&gt;more shared forms&lt;/span&gt;
       &lt;span&gt;Counts treat each distinct Pokémon GO form as one entry, including Mega and regional/gameplay forms; cosmetic costumes are not counted separately.&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;panel-calculator&quot; class=&quot;network-panel&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;tab-calculator&quot; hidden&gt;
+    &lt;div class=&quot;viz-controls calc-controls&quot;&gt;
+      &lt;label class=&quot;form-label&quot; for=&quot;calc-type-1&quot;&gt;Defending type 1
+        &lt;select id=&quot;calc-type-1&quot; class=&quot;form-select&quot;&gt;&lt;/select&gt;
+      &lt;/label&gt;
+      &lt;label class=&quot;form-label&quot; for=&quot;calc-type-2&quot;&gt;Defending type 2
+        &lt;select id=&quot;calc-type-2&quot; class=&quot;form-select&quot;&gt;&lt;option value=&quot;none&quot;&gt;None — single type&lt;/option&gt;&lt;/select&gt;
+      &lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;calculator-summary&quot; class=&quot;card&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;calculator-results&quot; class=&quot;calculator-results&quot; role=&quot;list&quot; aria-label=&quot;Ranked attacking types&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;viz-row text-small text-muted&quot; aria-label=&quot;Calculator method&quot;&gt;
+      &lt;span&gt;&lt;strong&gt;Pokémon GO multipliers:&lt;/strong&gt; 1.6× for each weakness, 0.625× for each resistance, and 0.391× for an immunity-equivalent resistance. Dual-type effects multiply.&lt;/span&gt;
     &lt;/div&gt;
   &lt;/section&gt;
 &lt;/div&gt;
@@ -1935,7 +1951,20 @@ html&gt;body{padding:0}&lt;/style&gt;
 #pokemon-type-network .pokemon-example span { font-size:12px; line-height:1.2; max-width:118px; }
 #pokemon-type-network .legend-line.co-thin { border-color:color-mix(in srgb, var(--foreground) 45%, transparent); border-top-width:2px; }
 #pokemon-type-network .legend-line.co-thick { border-color:var(--viz-series-1); border-top-width:7px; border-radius:4px; }
-@media (max-width:520px){ #type-network-svg,#cooccurrence-svg{height:700px;} #pokemon-type-network .viz-row{align-items:flex-start;} #pokemon-type-network .network-tabs{width:100%;} #pokemon-type-network .network-tab{flex:1;} }
+#pokemon-type-network .calculator-results { display:grid; gap:2px; margin-top:8px; }
+#pokemon-type-network .calc-row { display:grid; grid-template-columns:34px minmax(130px,190px) minmax(72px,1fr) 68px; align-items:center; gap:8px; min-height:42px; border-bottom:1px solid color-mix(in srgb, var(--foreground) 9%, transparent); }
+#pokemon-type-network .calc-rank { color:var(--muted-foreground); text-align:center; }
+#pokemon-type-network .calc-type { display:flex; align-items:center; gap:8px; min-width:0; font-weight:500; }
+#pokemon-type-network .calc-type-disc { position:relative; display:grid; place-items:center; flex:0 0 30px; width:30px; height:30px; border-radius:50%; }
+#pokemon-type-network .calc-type-disc img { width:18px; height:18px; object-fit:contain; }
+#pokemon-type-network .calc-bar-track { height:10px; background:color-mix(in srgb, var(--foreground) 8%, transparent); border-radius:999px; overflow:hidden; }
+#pokemon-type-network .calc-bar { height:100%; border-radius:999px; background:var(--muted-foreground); }
+#pokemon-type-network .calc-bar.strong { background:var(--viz-series-1); }
+#pokemon-type-network .calc-bar.resisted { background:var(--viz-series-2); }
+#pokemon-type-network .calc-multiplier { text-align:right; font-weight:500; }
+#pokemon-type-network .calc-row.best .calc-rank,
+#pokemon-type-network .calc-row.best .calc-multiplier { color:var(--viz-series-1); }
+@media (max-width:520px){ #type-network-svg,#cooccurrence-svg{height:700px;} #pokemon-type-network .viz-row{align-items:flex-start;} #pokemon-type-network .network-tabs{width:100%; flex-wrap:wrap;} #pokemon-type-network .network-tab{flex:1 1 30%;} #pokemon-type-network .calc-row{grid-template-columns:28px minmax(116px,1fr) minmax(52px,.75fr) 56px; gap:6px;} }
 &lt;/style&gt;
 
 &lt;script src=&quot;https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js&quot;&gt;&lt;/script&gt;
@@ -2172,13 +2201,77 @@ html&gt;body{padding:0}&lt;/style&gt;
   coTypeSelect.addEventListener(&#x27;change&#x27;,e=&gt;setCoFocus(e.target.value));
   coMinSelect.addEventListener(&#x27;change&#x27;,e=&gt;{coMin=+e.target.value;selectedCoLink=null;renderCoSummary(null);refreshCoEdges();});
   root.querySelector(&#x27;#reset-co-network&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{coMin=5;coMinSelect.value=&#x27;5&#x27;;coFocus=&#x27;all&#x27;;coTypeSelect.value=&#x27;all&#x27;;selectedCoLink=null;coNodes.forEach(d=&gt;{d.fx=null;d.fy=null;});renderCoSummary(null);coRedraw();});
-  const tabs=[root.querySelector(&#x27;#tab-matchups&#x27;),root.querySelector(&#x27;#tab-cooccurrence&#x27;)];
+
+  const calcType1=root.querySelector(&#x27;#calc-type-1&#x27;);
+  const calcType2=root.querySelector(&#x27;#calc-type-2&#x27;);
+  types.forEach(t=&gt;{
+    const first=document.createElement(&#x27;option&#x27;);first.value=t;first.textContent=t;calcType1.append(first);
+    const second=document.createElement(&#x27;option&#x27;);second.value=t;second.textContent=t;calcType2.append(second);
+  });
+  calcType1.value=&#x27;Ice&#x27;;calcType2.value=&#x27;Flying&#x27;;
+  function attackFactor(attack,defend){
+    if(wins[attack].includes(defend))return 1.6;
+    if(resists[attack].includes(defend))return .625;
+    if((immunities[attack]||[]).includes(defend))return .390625;
+    return 1;
+  }
+  function formatMultiplier(value){
+    if(Math.abs(value-1)&lt;1e-9)return &#x27;1×&#x27;;
+    return `${value.toFixed(value&lt;1?3:2).replace(/0+$/,&#x27;&#x27;).replace(/\.$/,&#x27;&#x27;)}×`;
+  }
+  function updateSecondTypeOptions(){
+    [...calcType2.options].forEach(o=&gt;{o.disabled=o.value!==&#x27;none&#x27;&amp;&amp;o.value===calcType1.value;});
+    if(calcType2.value===calcType1.value)calcType2.value=&#x27;none&#x27;;
+  }
+  function renderCalculator(){
+    updateSecondTypeOptions();
+    const defenders=[calcType1.value,...(calcType2.value===&#x27;none&#x27;?[]:[calcType2.value])];
+    const ranking=types.map(type=&gt;{
+      const factors=defenders.map(defend=&gt;attackFactor(type,defend));
+      return {type,factors,multiplier:factors.reduce((a,b)=&gt;a*b,1)};
+    }).sort((a,b)=&gt;b.multiplier-a.multiplier||a.type.localeCompare(b.type));
+    let tier=0,last=null;
+    ranking.forEach(d=&gt;{if(last===null||Math.abs(d.multiplier-last)&gt;1e-9){tier++;last=d.multiplier;}d.rank=tier;});
+    const best=ranking.filter(d=&gt;Math.abs(d.multiplier-ranking[0].multiplier)&lt;1e-9);
+    const defenderLabel=defenders.join(&#x27; + &#x27;);
+    const summary=root.querySelector(&#x27;#calculator-summary&#x27;);summary.replaceChildren();
+    const headline=document.createElement(&#x27;div&#x27;);
+    const strong=document.createElement(&#x27;strong&#x27;);strong.textContent=`Best against ${defenderLabel}: `;
+    headline.append(strong,document.createTextNode(`${best.map(d=&gt;d.type).join(&#x27;, &#x27;)} — ${formatMultiplier(best[0].multiplier)} damage`));
+    const detail=document.createElement(&#x27;div&#x27;);detail.className=&#x27;text-muted&#x27;;
+    detail.textContent=defenders.length===2
+      ? `The two defensive type modifiers are multiplied for each attacking move type.`
+      : `The ranking uses Pokémon GO’s single-type damage modifiers.`;
+    summary.append(headline,detail);
+    const results=root.querySelector(&#x27;#calculator-results&#x27;);results.replaceChildren();
+    const max=ranking[0].multiplier;
+    ranking.forEach(d=&gt;{
+      const row=document.createElement(&#x27;div&#x27;);row.className=`calc-row${d.rank===1?&#x27; best&#x27;:&#x27;&#x27;}`;row.setAttribute(&#x27;role&#x27;,&#x27;listitem&#x27;);
+      const factorText=d.factors.map((f,i)=&gt;`${formatMultiplier(f)} vs ${defenders[i]}`).join(&#x27; × &#x27;);
+      row.setAttribute(&#x27;aria-label&#x27;,`Rank ${d.rank}: ${d.type}, ${formatMultiplier(d.multiplier)} damage; ${factorText}`);
+      const rank=document.createElement(&#x27;div&#x27;);rank.className=&#x27;calc-rank tabular-nums&#x27;;rank.textContent=`#${d.rank}`;
+      const type=document.createElement(&#x27;div&#x27;);type.className=&#x27;calc-type&#x27;;
+      const disc=document.createElement(&#x27;span&#x27;);disc.className=&#x27;calc-type-disc&#x27;;disc.style.background=typeStyle[d.type][0];
+      const icon=document.createElement(&#x27;img&#x27;);icon.src=typeStyle[d.type][1];icon.alt=&#x27;&#x27;;disc.append(icon);
+      const label=document.createElement(&#x27;span&#x27;);label.textContent=d.type;type.append(disc,label);
+      const track=document.createElement(&#x27;div&#x27;);track.className=&#x27;calc-bar-track&#x27;;track.setAttribute(&#x27;title&#x27;,factorText);
+      const bar=document.createElement(&#x27;div&#x27;);bar.className=`calc-bar ${d.multiplier&gt;1?&#x27;strong&#x27;:d.multiplier&lt;1?&#x27;resisted&#x27;:&#x27;neutral&#x27;}`;bar.style.width=`${Math.max(4,d.multiplier/max*100)}%`;track.append(bar);
+      const multiplier=document.createElement(&#x27;div&#x27;);multiplier.className=&#x27;calc-multiplier tabular-nums&#x27;;multiplier.textContent=formatMultiplier(d.multiplier);
+      row.append(rank,type,track,multiplier);results.append(row);
+    });
+  }
+  calcType1.addEventListener(&#x27;change&#x27;,renderCalculator);
+  calcType2.addEventListener(&#x27;change&#x27;,()=&gt;{if(calcType2.value===calcType1.value)calcType2.value=&#x27;none&#x27;;renderCalculator();});
+  renderCalculator();
+
+  const tabs=[...root.querySelectorAll(&#x27;.network-tab&#x27;)];
+  const panels=[...root.querySelectorAll(&#x27;.network-panel&#x27;)];
   function activateTab(tab){
-    const isCo=tab.id===&#x27;tab-cooccurrence&#x27;;
+    const target=tab.getAttribute(&#x27;aria-controls&#x27;);
     tabs.forEach(t=&gt;{const active=t===tab;t.classList.toggle(&#x27;active&#x27;,active);t.setAttribute(&#x27;aria-selected&#x27;,active);});
-    root.querySelector(&#x27;#panel-matchups&#x27;).classList.toggle(&#x27;active&#x27;,!isCo);root.querySelector(&#x27;#panel-matchups&#x27;).hidden=isCo;
-    root.querySelector(&#x27;#panel-cooccurrence&#x27;).classList.toggle(&#x27;active&#x27;,isCo);root.querySelector(&#x27;#panel-cooccurrence&#x27;).hidden=!isCo;
-    if(isCo){requestAnimationFrame(()=&gt;coRedraw());}else{requestAnimationFrame(()=&gt;redraw());}
+    panels.forEach(p=&gt;{const active=p.id===target;p.classList.toggle(&#x27;active&#x27;,active);p.hidden=!active;});
+    if(target===&#x27;panel-cooccurrence&#x27;)requestAnimationFrame(()=&gt;coRedraw());
+    if(target===&#x27;panel-matchups&#x27;)requestAnimationFrame(()=&gt;redraw());
   }
   tabs.forEach((tab,i)=&gt;{tab.addEventListener(&#x27;click&#x27;,()=&gt;activateTab(tab));tab.addEventListener(&#x27;keydown&#x27;,e=&gt;{if(e.key===&#x27;ArrowRight&#x27;||e.key===&#x27;ArrowLeft&#x27;){e.preventDefault();const next=tabs[(i+(e.key===&#x27;ArrowRight&#x27;?1:-1)+tabs.length)%tabs.length];next.focus();activateTab(next);}});});
   renderCoSummary(null);

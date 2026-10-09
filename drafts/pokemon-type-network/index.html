@@ -1966,6 +1966,8 @@ html&gt;body{padding:0}&lt;/style&gt;
 #pokemon-type-network .calc-type-icons { display:flex; flex:0 0 auto; gap:3px; }
 #pokemon-type-network .calc-type-label { min-width:0; line-height:1.15; }
 #pokemon-type-network .calc-type-label small { display:block; margin-top:3px; color:var(--muted-foreground); font-weight:400; }
+#pokemon-type-network .calc-type-link { appearance:none; border:0; padding:0; color:inherit; background:transparent; font:inherit; font-weight:500; text-align:left; text-decoration:underline dotted; text-underline-offset:3px; cursor:pointer; }
+#pokemon-type-network .calc-type-link:hover { color:var(--viz-series-1); }
 #pokemon-type-network .calc-type-disc { position:relative; display:grid; place-items:center; flex:0 0 30px; width:30px; height:30px; border-radius:50%; }
 #pokemon-type-network .calc-type-disc img { width:18px; height:18px; object-fit:contain; }
 #pokemon-type-network .calc-bar-track { height:10px; background:color-mix(in srgb, var(--foreground) 8%, transparent); border-radius:999px; overflow:hidden; }
@@ -2194,6 +2196,16 @@ html&gt;body{padding:0}&lt;/style&gt;
   }
   function selectCoLink(d){selectedCoLink=d;renderCoSummary(d);refreshCoEdges();}
   function setCoFocus(type){coFocus=type;coTypeSelect.value=type;selectedCoLink=null;renderCoSummary(null);refreshCoEdges();}
+  function findCoLink(parts){
+    if(parts.length!==2)return null;
+    const [a,b]=parts;
+    return cooccurrenceLinks.find(d=&gt;(d.source.id===a&amp;&amp;d.target.id===b)||(d.source.id===b&amp;&amp;d.target.id===a))||null;
+  }
+  function jumpToCoLink(link){
+    coFocus=link.source.id;coTypeSelect.value=coFocus;selectedCoLink=link;renderCoSummary(link);
+    activateTab(root.querySelector(&#x27;#tab-cooccurrence&#x27;));
+    requestAnimationFrame(()=&gt;{refreshCoEdges();const active=root.querySelector(&#x27;.co-edge.active&#x27;);if(active)active.focus({preventScroll:true});});
+  }
   function coRedraw(){
     coWidth=root.querySelector(&#x27;#cooccurrence-svg&#x27;).getBoundingClientRect().width||700;
     coHeight=coWidth&lt;520?700:650;coSvg.attr(&#x27;viewBox&#x27;,`0 0 ${coWidth} ${coHeight}`);
@@ -2282,7 +2294,10 @@ html&gt;body{padding:0}&lt;/style&gt;
       const type=document.createElement(&#x27;div&#x27;);type.className=&#x27;calc-type&#x27;;
       const icons=document.createElement(&#x27;span&#x27;);icons.className=&#x27;calc-type-icons&#x27;;
       d.parts.forEach(part=&gt;{const disc=document.createElement(&#x27;span&#x27;);disc.className=&#x27;calc-type-disc&#x27;;disc.style.background=typeStyle[part][0];const icon=document.createElement(&#x27;img&#x27;);icon.src=typeStyle[part][1];icon.alt=&#x27;&#x27;;disc.append(icon);icons.append(disc);});
-      const label=document.createElement(&#x27;span&#x27;);label.className=&#x27;calc-type-label&#x27;;label.append(document.createTextNode(d.label));
+      const label=document.createElement(&#x27;span&#x27;);label.className=&#x27;calc-type-label&#x27;;
+      const coLink=findCoLink(d.parts);
+      if(coLink){const linkButton=document.createElement(&#x27;button&#x27;);linkButton.type=&#x27;button&#x27;;linkButton.className=&#x27;calc-type-link&#x27;;linkButton.textContent=d.label;linkButton.setAttribute(&#x27;aria-label&#x27;,`Show ${d.label} dual-type connection and Pokémon on the Dual-type frequency tab`);linkButton.addEventListener(&#x27;click&#x27;,()=&gt;jumpToCoLink(coLink));label.append(linkButton);}
+      else label.append(document.createTextNode(d.label));
       const attackLabel=document.createElement(&#x27;small&#x27;);attackLabel.textContent=`uses ${d.bestAttacks.map(a=&gt;a.attack).join(&#x27; / &#x27;)}`;label.append(attackLabel);type.append(icons,label);
       const track=document.createElement(&#x27;div&#x27;);track.className=&#x27;calc-bar-track&#x27;;track.setAttribute(&#x27;title&#x27;,`Overall matchup score ${d.score.toFixed(2)}`);
       const bar=document.createElement(&#x27;div&#x27;);bar.className=`calc-bar ${d.score&gt;1?&#x27;strong&#x27;:d.score&lt;1?&#x27;resisted&#x27;:&#x27;neutral&#x27;}`;bar.style.width=`${Math.max(4,d.score/max*100)}%`;track.append(bar);

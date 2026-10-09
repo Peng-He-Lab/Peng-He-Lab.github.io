@@ -17,7 +17,7 @@
 &lt;meta charset=&quot;utf-8&quot;&gt;
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
 &lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
-&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://raw.githubusercontent.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
 &lt;title&gt;Pokemon Type Network&lt;/title&gt;
 &lt;style&gt;:root {
   color-scheme: light dark;
@@ -1873,9 +1873,12 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;/label&gt;
     &lt;/div&gt;
     &lt;div id=&quot;calculator-summary&quot; class=&quot;card&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;calc-row calc-header&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div&gt;Rank&lt;/div&gt;&lt;div&gt;Pokémon / attack type&lt;/div&gt;&lt;div&gt;Overall matchup&lt;/div&gt;&lt;div&gt;Deals&lt;/div&gt;&lt;div&gt;Receives&lt;/div&gt;
+    &lt;/div&gt;
     &lt;div id=&quot;calculator-results&quot; class=&quot;calculator-results&quot; role=&quot;list&quot; aria-label=&quot;Ranked attacking types&quot;&gt;&lt;/div&gt;
     &lt;div class=&quot;viz-row text-small text-muted&quot; aria-label=&quot;Calculator method&quot;&gt;
-      &lt;span&gt;&lt;strong&gt;Pokémon GO multipliers:&lt;/strong&gt; 1.6× for each weakness, 0.625× for each resistance, and 0.391× for an immunity-equivalent resistance. Dual-type effects multiply.&lt;/span&gt;
+      &lt;span&gt;&lt;strong&gt;Overall matchup = damage dealt ÷ maximum damage received.&lt;/strong&gt; Each candidate is treated as a single-type Pokémon using an attack of that same type. The defender is assumed to use whichever of its displayed types does more damage. Pokémon GO modifiers are 1.6×, 0.625×, and 0.391×; dual-type defensive effects multiply.&lt;/span&gt;
     &lt;/div&gt;
   &lt;/section&gt;
 &lt;/div&gt;
@@ -1952,7 +1955,9 @@ html&gt;body{padding:0}&lt;/style&gt;
 #pokemon-type-network .legend-line.co-thin { border-color:color-mix(in srgb, var(--foreground) 45%, transparent); border-top-width:2px; }
 #pokemon-type-network .legend-line.co-thick { border-color:var(--viz-series-1); border-top-width:7px; border-radius:4px; }
 #pokemon-type-network .calculator-results { display:grid; gap:2px; margin-top:8px; }
-#pokemon-type-network .calc-row { display:grid; grid-template-columns:34px minmax(130px,190px) minmax(72px,1fr) 68px; align-items:center; gap:8px; min-height:42px; border-bottom:1px solid color-mix(in srgb, var(--foreground) 9%, transparent); }
+#pokemon-type-network .calc-row { display:grid; grid-template-columns:42px minmax(130px,190px) minmax(72px,1fr) 64px 86px; align-items:center; gap:8px; min-height:42px; border-bottom:1px solid color-mix(in srgb, var(--foreground) 9%, transparent); }
+#pokemon-type-network .calc-header { min-height:32px; color:var(--muted-foreground); font-size:12px; font-weight:500; }
+#pokemon-type-network .calc-header &gt; :nth-child(n+4) { text-align:right; }
 #pokemon-type-network .calc-rank { color:var(--muted-foreground); text-align:center; }
 #pokemon-type-network .calc-type { display:flex; align-items:center; gap:8px; min-width:0; font-weight:500; }
 #pokemon-type-network .calc-type-disc { position:relative; display:grid; place-items:center; flex:0 0 30px; width:30px; height:30px; border-radius:50%; }
@@ -1962,9 +1967,11 @@ html&gt;body{padding:0}&lt;/style&gt;
 #pokemon-type-network .calc-bar.strong { background:var(--viz-series-1); }
 #pokemon-type-network .calc-bar.resisted { background:var(--viz-series-2); }
 #pokemon-type-network .calc-multiplier { text-align:right; font-weight:500; }
+#pokemon-type-network .calc-received { text-align:right; color:var(--muted-foreground); }
+#pokemon-type-network .calc-received small { display:block; font-size:11px; line-height:1.1; }
 #pokemon-type-network .calc-row.best .calc-rank,
 #pokemon-type-network .calc-row.best .calc-multiplier { color:var(--viz-series-1); }
-@media (max-width:520px){ #type-network-svg,#cooccurrence-svg{height:700px;} #pokemon-type-network .viz-row{align-items:flex-start;} #pokemon-type-network .network-tabs{width:100%; flex-wrap:wrap;} #pokemon-type-network .network-tab{flex:1 1 30%;} #pokemon-type-network .calc-row{grid-template-columns:28px minmax(116px,1fr) minmax(52px,.75fr) 56px; gap:6px;} }
+@media (max-width:620px){ #type-network-svg,#cooccurrence-svg{height:700px;} #pokemon-type-network .viz-row{align-items:flex-start;} #pokemon-type-network .network-tabs{width:100%; flex-wrap:wrap;} #pokemon-type-network .network-tab{flex:1 1 30%;} #pokemon-type-network .calc-row{grid-template-columns:30px minmax(105px,1fr) 54px 62px 72px; gap:5px;} #pokemon-type-network .calc-header &gt; :nth-child(3){font-size:0;} #pokemon-type-network .calc-header &gt; :nth-child(3)::after{content:&#x27;Score&#x27;;font-size:12px;} }
 &lt;/style&gt;
 
 &lt;script src=&quot;https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js&quot;&gt;&lt;/script&gt;
@@ -2227,37 +2234,42 @@ html&gt;body{padding:0}&lt;/style&gt;
     updateSecondTypeOptions();
     const defenders=[calcType1.value,...(calcType2.value===&#x27;none&#x27;?[]:[calcType2.value])];
     const ranking=types.map(type=&gt;{
-      const factors=defenders.map(defend=&gt;attackFactor(type,defend));
-      return {type,factors,multiplier:factors.reduce((a,b)=&gt;a*b,1)};
-    }).sort((a,b)=&gt;b.multiplier-a.multiplier||a.type.localeCompare(b.type));
+      const outgoingFactors=defenders.map(defend=&gt;attackFactor(type,defend));
+      const incomingFactors=defenders.map(attack=&gt;attackFactor(attack,type));
+      const dealt=outgoingFactors.reduce((a,b)=&gt;a*b,1);
+      const received=Math.max(...incomingFactors);
+      const threateningTypes=defenders.filter((defend,i)=&gt;Math.abs(incomingFactors[i]-received)&lt;1e-9);
+      return {type,outgoingFactors,incomingFactors,dealt,received,threateningTypes,score:dealt/received};
+    }).sort((a,b)=&gt;b.score-a.score||b.dealt-a.dealt||a.received-b.received||a.type.localeCompare(b.type));
     let tier=0,last=null;
-    ranking.forEach(d=&gt;{if(last===null||Math.abs(d.multiplier-last)&gt;1e-9){tier++;last=d.multiplier;}d.rank=tier;});
-    const best=ranking.filter(d=&gt;Math.abs(d.multiplier-ranking[0].multiplier)&lt;1e-9);
+    ranking.forEach(d=&gt;{if(last===null||Math.abs(d.score-last)&gt;1e-9){tier++;last=d.score;}d.rank=tier;});
+    const best=ranking.filter(d=&gt;Math.abs(d.score-ranking[0].score)&lt;1e-9);
     const defenderLabel=defenders.join(&#x27; + &#x27;);
     const summary=root.querySelector(&#x27;#calculator-summary&#x27;);summary.replaceChildren();
     const headline=document.createElement(&#x27;div&#x27;);
-    const strong=document.createElement(&#x27;strong&#x27;);strong.textContent=`Best against ${defenderLabel}: `;
-    headline.append(strong,document.createTextNode(`${best.map(d=&gt;d.type).join(&#x27;, &#x27;)} — ${formatMultiplier(best[0].multiplier)} damage`));
+    const strong=document.createElement(&#x27;strong&#x27;);strong.textContent=`Best overall matchup against ${defenderLabel}: `;
+    headline.append(strong,document.createTextNode(`${best.map(d=&gt;d.type).join(&#x27;, &#x27;)} — deals ${formatMultiplier(best[0].dealt)}, receives up to ${formatMultiplier(best[0].received)}`));
     const detail=document.createElement(&#x27;div&#x27;);detail.className=&#x27;text-muted&#x27;;
-    detail.textContent=defenders.length===2
-      ? `The two defensive type modifiers are multiplied for each attacking move type.`
-      : `The ranking uses Pokémon GO’s single-type damage modifiers.`;
+    detail.textContent=`Matchup score ${best[0].score.toFixed(2).replace(/0+$/,&#x27;&#x27;).replace(/\.$/,&#x27;&#x27;)} = damage dealt ÷ worst incoming STAB damage. Attack type and Pokémon type are assumed to be the same.`;
     summary.append(headline,detail);
     const results=root.querySelector(&#x27;#calculator-results&#x27;);results.replaceChildren();
-    const max=ranking[0].multiplier;
+    const max=ranking[0].score;
     ranking.forEach(d=&gt;{
       const row=document.createElement(&#x27;div&#x27;);row.className=`calc-row${d.rank===1?&#x27; best&#x27;:&#x27;&#x27;}`;row.setAttribute(&#x27;role&#x27;,&#x27;listitem&#x27;);
-      const factorText=d.factors.map((f,i)=&gt;`${formatMultiplier(f)} vs ${defenders[i]}`).join(&#x27; × &#x27;);
-      row.setAttribute(&#x27;aria-label&#x27;,`Rank ${d.rank}: ${d.type}, ${formatMultiplier(d.multiplier)} damage; ${factorText}`);
+      const outgoingText=d.outgoingFactors.map((f,i)=&gt;`${formatMultiplier(f)} vs ${defenders[i]}`).join(&#x27; × &#x27;);
+      const incomingText=d.incomingFactors.map((f,i)=&gt;`${formatMultiplier(f)} from ${defenders[i]}`).join(&#x27;, &#x27;);
+      row.setAttribute(&#x27;aria-label&#x27;,`Rank ${d.rank}: ${d.type}; matchup score ${d.score.toFixed(2)}; deals ${formatMultiplier(d.dealt)}; receives up to ${formatMultiplier(d.received)}. ${incomingText}`);
       const rank=document.createElement(&#x27;div&#x27;);rank.className=&#x27;calc-rank tabular-nums&#x27;;rank.textContent=`#${d.rank}`;
       const type=document.createElement(&#x27;div&#x27;);type.className=&#x27;calc-type&#x27;;
       const disc=document.createElement(&#x27;span&#x27;);disc.className=&#x27;calc-type-disc&#x27;;disc.style.background=typeStyle[d.type][0];
       const icon=document.createElement(&#x27;img&#x27;);icon.src=typeStyle[d.type][1];icon.alt=&#x27;&#x27;;disc.append(icon);
       const label=document.createElement(&#x27;span&#x27;);label.textContent=d.type;type.append(disc,label);
-      const track=document.createElement(&#x27;div&#x27;);track.className=&#x27;calc-bar-track&#x27;;track.setAttribute(&#x27;title&#x27;,factorText);
-      const bar=document.createElement(&#x27;div&#x27;);bar.className=`calc-bar ${d.multiplier&gt;1?&#x27;strong&#x27;:d.multiplier&lt;1?&#x27;resisted&#x27;:&#x27;neutral&#x27;}`;bar.style.width=`${Math.max(4,d.multiplier/max*100)}%`;track.append(bar);
-      const multiplier=document.createElement(&#x27;div&#x27;);multiplier.className=&#x27;calc-multiplier tabular-nums&#x27;;multiplier.textContent=formatMultiplier(d.multiplier);
-      row.append(rank,type,track,multiplier);results.append(row);
+      const track=document.createElement(&#x27;div&#x27;);track.className=&#x27;calc-bar-track&#x27;;track.setAttribute(&#x27;title&#x27;,`Overall matchup score ${d.score.toFixed(2)}`);
+      const bar=document.createElement(&#x27;div&#x27;);bar.className=`calc-bar ${d.score&gt;1?&#x27;strong&#x27;:d.score&lt;1?&#x27;resisted&#x27;:&#x27;neutral&#x27;}`;bar.style.width=`${Math.max(4,d.score/max*100)}%`;track.append(bar);
+      const dealt=document.createElement(&#x27;div&#x27;);dealt.className=&#x27;calc-multiplier tabular-nums&#x27;;dealt.textContent=formatMultiplier(d.dealt);dealt.title=outgoingText;
+      const received=document.createElement(&#x27;div&#x27;);received.className=&#x27;calc-received tabular-nums&#x27;;received.textContent=formatMultiplier(d.received);
+      const source=document.createElement(&#x27;small&#x27;);source.textContent=d.threateningTypes.join(&#x27;/&#x27;);received.append(source);received.title=incomingText;
+      row.append(rank,type,track,dealt,received);results.append(row);
     });
   }
   calcType1.addEventListener(&#x27;change&#x27;,renderCalculator);

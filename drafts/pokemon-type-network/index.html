@@ -2269,7 +2269,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       : `${bestNames} — tied at matchup score ${best[0].score.toFixed(2).replace(/0+$/,&#x27;&#x27;).replace(/\.$/,&#x27;&#x27;)}`;
     headline.append(strong,document.createTextNode(bestDetail));
     const detail=document.createElement(&#x27;div&#x27;);detail.className=&#x27;text-muted&#x27;;
-    detail.textContent=`Matchup score ${best[0].score.toFixed(2).replace(/0+$/,&#x27;&#x27;).replace(/\.$/,&#x27;&#x27;)} = damage dealt ÷ worst incoming STAB damage. Attack type and Pokémon type are assumed to be the same.`;
+    detail.textContent=`Matchup score ${best[0].score.toFixed(2).replace(/0+$/,&#x27;&#x27;).replace(/\.$/,&#x27;&#x27;)} = damage dealt ÷ worst incoming STAB damage. The attack always uses one of the candidate Pokémon’s own types.`;
     summary.append(headline,detail);
     const results=root.querySelector(&#x27;#calculator-results&#x27;);results.replaceChildren();
     const max=ranking[0].score;
